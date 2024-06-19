@@ -77,7 +77,7 @@ function subscribeToTradeStreams(symbols) {
     tradeSocket.onmessage = handleTradeMessage;
 }
 
-// 获取所有交易对并批量订阅
+// 获取所有交易对并分批订阅
 async function init() {
     await getExchangeRates();
     const response = await fetch('https://api.binance.com/api/v3/exchangeInfo');
@@ -88,7 +88,9 @@ async function init() {
     const chunkSize = 200;
     for (let i = 0; i < symbols.length; i += chunkSize) {
         const chunk = symbols.slice(i, i + chunkSize);
-        subscribeToTradeStreams(chunk);
+        setTimeout(() => {
+            subscribeToTradeStreams(chunk);
+        }, i * 100); // 延时订阅，避免资源不足
     }
 }
 
