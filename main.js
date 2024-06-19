@@ -115,13 +115,15 @@ function updateData() {
 
     updateList(buyList, sortedBuyOrders.map(([baseAsset, data]) => ({
         baseAsset,
-        displayValue: `${data.count} 次 ${data.totalValue.toFixed(2)} USDT`,
+        count: data.count,
+        displayValue: `${data.totalValue.toFixed(2)} USDT`,
         className: 'buy'
     })));
 
     updateList(sellList, sortedSellOrders.map(([baseAsset, data]) => ({
         baseAsset,
-        displayValue: `${data.count} 次 ${data.totalValue.toFixed(2)} USDT`,
+        count: data.count,
+        displayValue: `${data.totalValue.toFixed(2)} USDT`,
         className: 'sell'
     })));
 
@@ -139,7 +141,7 @@ function updateList(list, items) {
     items.forEach(item => {
         const listItem = document.createElement('li');
         listItem.innerHTML = `<span>${item.baseAsset}</span>
-                              <span class="count">${item.count ? item.count : ''}</span>
+                              <span class="count">${item.count}</span>
                               <span class="value">${item.displayValue}</span>`;
         if (item.className) {
             listItem.classList.add(item.className);
