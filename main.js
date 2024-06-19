@@ -159,7 +159,7 @@ function updateData() {
         count: data.count,
         totalValue: data.totalValue.toFixed(2),
         className: 'buy'
-    });
+    })));
 
     updateList(sellList, sortedSellOrders.map(([baseAsset, data]) => ({
         baseAsset,
