@@ -129,12 +129,7 @@ function updateData() {
 
     // 只显示单笔交易金额超过10000 USDT的大额交易，并按从大到小排序
     const sortedLargeTrades = largeTrades.sort((a, b) => b.value - a.value);
-    updateList(tradesList, sortedLargeTrades.map(trade => ({
-        baseAsset: trade.baseAsset,
-        displayValue: trade.displayValue,
-        className: trade.className,
-        isBuyerMaker: trade.isBuyerMaker
-    })));
+    updateLargeTradesList(tradesList, sortedLargeTrades);
 }
 
 function updateList(list, items) {
@@ -144,6 +139,19 @@ function updateList(list, items) {
         listItem.innerHTML = `<span>${item.baseAsset}</span>
                               <span class="count">${item.count}</span>
                               <span class="value">${item.totalValue}</span> USDT`;
+        if (item.className) {
+            listItem.classList.add(item.className);
+        }
+        list.appendChild(listItem);
+    });
+}
+
+function updateLargeTradesList(list, items) {
+    list.innerHTML = ''; // 清空列表
+    items.forEach(item => {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `<span>${item.baseAsset}</span>
+                              <span class="value">${item.displayValue}</span> USDT`;
         if (item.className) {
             listItem.classList.add(item.className);
         }
