@@ -84,7 +84,7 @@ function updateData() {
             largeTrades.push({
                 baseAsset,
                 value: tradeValueInUSDT,
-                displayValue: `${tradeValueInUSDT.toFixed(2)} USDT`,
+                displayValue: tradeValueInUSDT.toFixed(2),
                 className: 'large-trade',
                 isBuyerMaker
             });
@@ -116,14 +116,14 @@ function updateData() {
     updateList(buyList, sortedBuyOrders.map(([baseAsset, data]) => ({
         baseAsset,
         count: data.count,
-        displayValue: `${data.totalValue.toFixed(2)} USDT`,
+        totalValue: data.totalValue.toFixed(2),
         className: 'buy'
     })));
 
     updateList(sellList, sortedSellOrders.map(([baseAsset, data]) => ({
         baseAsset,
         count: data.count,
-        displayValue: `${data.totalValue.toFixed(2)} USDT`,
+        totalValue: data.totalValue.toFixed(2),
         className: 'sell'
     })));
 
@@ -131,8 +131,9 @@ function updateData() {
     const sortedLargeTrades = largeTrades.sort((a, b) => b.value - a.value);
     updateList(tradesList, sortedLargeTrades.map(trade => ({
         baseAsset: trade.baseAsset,
-        displayValue: `${trade.isBuyerMaker ? '-' : '+'} ${trade.displayValue}`,
-        className: trade.className
+        displayValue: trade.displayValue,
+        className: trade.className,
+        isBuyerMaker: trade.isBuyerMaker
     })));
 }
 
@@ -142,7 +143,7 @@ function updateList(list, items) {
         const listItem = document.createElement('li');
         listItem.innerHTML = `<span>${item.baseAsset}</span>
                               <span class="count">${item.count}</span>
-                              <span class="value">${item.displayValue}</span>`;
+                              <span class="value">${item.totalValue}</span> USDT`;
         if (item.className) {
             listItem.classList.add(item.className);
         }
