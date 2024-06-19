@@ -69,23 +69,27 @@ function displayTrade(trade) {
     tradesList.appendChild(tradeElement);
 }
 
-// 订阅所有交易对的逐笔交易数据
-function subscribeToTradeStreams() {
-    const tickerUrl = "wss://stream.binance.com:9443/ws/!ticker@arr";
-    const tickerSocket = new WebSocket(tickerUrl);
+// 批量订阅交易对的逐笔交易数据
+function subscribeToTradeStreams(symbols) {
+    const tradeUrl = `wss://stream.binance.com:9443/stream?streams=${symbols.map(symbol => `${symbol.toLowerCase()}@trade`).join('/')}`;
+    const tradeSocket = new WebSocket(tradeUrl);
 
-    tickerSocket.onmessage = function(event) {
-        const tickers = JSON.parse(event.data);
-        tickers.forEach(ticker => {
-            const symbol = ticker.s;
-            if (!tradeSockets[symbol]) {
-                const tradeUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@trade`;
-                const tradeSocket = new WebSocket(tradeUrl);
-                tradeSocket.onmessage = handleTradeMessage;
-                tradeSockets[symbol] = tradeSocket;
-            }
-        });
-    };
+    tradeSocket.onmessage = handleTradeMessage;
+}
+
+// 获取所有交易对并批量订阅
+async function init() {
+    await getExchangeRates();
+    const response = await fetch('https://api.binance.com/api/v3/exchangeInfo');
+    const data = await response.json();
+    const symbols = data.symbols.map(symbol => symbol.symbol);
+
+    // 每次订阅200个交易对，避免资源不足
+    const chunkSize = 200;
+    for (let i = 0; i < symbols.length; i += chunkSize) {
+        const chunk = symbols.slice(i, i + chunkSize);
+        subscribeToTradeStreams(chunk);
+    }
 }
 
 // 每隔10秒更新一次数据
@@ -201,4 +205,4 @@ function updateLargeTradesList(list, items) {
 }
 
 // 初始化获取兑换率并订阅交易流
-getExchangeRates().then(subscribeToTradeStreams);
+init();
