@@ -24,8 +24,49 @@ async function getExchangeRates() {
 // 处理WebSocket消息
 function handleTradeMessage(event) {
     const trade = JSON.parse(event.data);
-    trade.timestamp = Date.now();
-    latestTradeData.push(trade);
+    const symbol = trade.s;
+    const price = parseFloat(trade.p);
+    const quantity = parseFloat(trade.q);
+    const tradeValue = price * quantity;
+    const isBuyerMaker = trade.m;
+
+    // 提取代币名称（假设交易对以USDT、BTC、ETH或BNB结尾）
+    const baseAsset = symbol.replace(/(USDT|BTC|ETH|BNB|USDC|FDUSD)$/, '');
+    let tradeValueInUSDT = tradeValue;
+
+    // 如果不是USDT交易对，转换为USDT
+    if (!symbol.endsWith('USDT')) {
+        const exchangeRate = exchangeRates[baseAsset];
+        if (exchangeRate) {
+            tradeValueInUSDT = tradeValue * exchangeRate;
+        } else {
+            return; // 如果没有找到兑换率，跳过该交易
+        }
+    }
+
+    // 统计大额交易（单笔交易金额超过10000 USDT）
+    if (tradeValueInUSDT > tradeThreshold) {
+        displayTrade({
+            baseAsset,
+            value: tradeValueInUSDT,
+            displayValue: tradeValueInUSDT.toFixed(2),
+            className: 'large-trade',
+            isBuyerMaker,
+            time: new Date(trade.T).toLocaleTimeString()
+        });
+    }
+}
+
+// 显示大额交易
+function displayTrade(trade) {
+    const tradeElement = document.createElement('li');
+    tradeElement.innerHTML = `<span>${trade.baseAsset}</span>
+                              <span class="value">${trade.displayValue}</span> USDT
+                              <span class="time">${trade.time}</span>`;
+    if (trade.className) {
+        tradeElement.classList.add(trade.className);
+    }
+    tradesList.appendChild(tradeElement);
 }
 
 // 订阅所有交易对的逐笔交易数据
@@ -118,7 +159,7 @@ function updateData() {
         count: data.count,
         totalValue: data.totalValue.toFixed(2),
         className: 'buy'
-    })));
+    });
 
     updateList(sellList, sortedSellOrders.map(([baseAsset, data]) => ({
         baseAsset,
