@@ -138,7 +138,9 @@ function updateList(list, items) {
     list.innerHTML = ''; // 清空列表
     items.forEach(item => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `<span>${item.baseAsset}</span><span>${item.displayValue}</span>`;
+        listItem.innerHTML = `<span>${item.baseAsset}</span>
+                              <span class="count">${item.count ? item.count : ''}</span>
+                              <span class="value">${item.displayValue}</span>`;
         if (item.className) {
             listItem.classList.add(item.className);
         }
