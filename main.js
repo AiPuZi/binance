@@ -44,6 +44,13 @@ function handleTradeMessage(event) {
         }
     }
 
+    // 更新最新交易数据
+    latestTradeData.push({
+        ...trade,
+        tradeValueInUSDT,
+        timestamp: Date.now()
+    });
+
     // 统计大额交易（单笔交易金额超过10000 USDT）
     if (tradeValueInUSDT > tradeThreshold) {
         displayTrade({
@@ -82,7 +89,7 @@ async function init() {
     await getExchangeRates();
     const response = await fetch('https://api.binance.com/api/v3/exchangeInfo', {
         headers: {
-            'X-MBX-APIKEY': 'eEftomUZsIS6LuD3qpCmgmoljw9GZgr0VLwrzPOD8ODTFgp4OSDHFBVzACngACqO' // 替换为你的API密钥
+            'X-MBX-APIKEY': 'YOUR_API_KEY' // 替换为你的API密钥
         }
     });
     const data = await response.json();
