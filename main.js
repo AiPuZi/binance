@@ -11,7 +11,11 @@ let exchangeRates = {};
 
 // 获取USDT兑换率
 async function getExchangeRates() {
-    const response = await fetch('https://api.binance.com/api/v3/ticker/price');
+    const response = await fetch('https://api.binance.com/api/v3/ticker/price', {
+        headers: {
+            'X-MBX-APIKEY': 'eEftomUZsIS6LuD3qpCmgmoljw9GZgr0VLwrzPOD8ODTFgp4OSDHFBVzACngACqO' // 替换为你的API密钥
+        }
+    });
     const data = await response.json();
     data.forEach(ticker => {
         if (ticker.symbol.endsWith('USDT')) {
@@ -80,7 +84,11 @@ function subscribeToTradeStreams(symbols) {
 // 获取所有交易对并分批订阅
 async function init() {
     await getExchangeRates();
-    const response = await fetch('https://api.binance.com/api/v3/exchangeInfo');
+    const response = await fetch('https://api.binance.com/api/v3/exchangeInfo', {
+        headers: {
+            'X-MBX-APIKEY': 'eEftomUZsIS6LuD3qpCmgmoljw9GZgr0VLwrzPOD8ODTFgp4OSDHFBVzACngACqO' // 替换为你的API密钥
+        }
+    });
     const data = await response.json();
     const symbols = data.symbols.map(symbol => symbol.symbol);
 
